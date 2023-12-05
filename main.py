@@ -74,3 +74,7 @@ def DeleteUser(user_id: int, db: Session = Depends(get_db)):
         return {"status": 0, "msg": "Failed to delete this data."}
 
 
+@app.post('/addjob')
+def AddJob(user_id: int, db: Session= Depends(get_db)):
+    pass
+
