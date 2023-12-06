@@ -3,7 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from Database import models, schemas
 from Database.database import engine, SessionLocal
 from sqlalchemy.orm import Session
+from sqlalchemy import and_
 from Module.user import user_crud
+from Module.jobs import job_crud
 
 app = FastAPI()
 
@@ -27,8 +29,6 @@ def get_db():
         db.close()
 
 
-# def getUser(unq_id: float = None, user_id: int = None, position: float = None):
-#     return {"status": 1, "data": {"unq_id": unq_id, "user_id": user_id, "position": position}}
 @app.get("/users")
 def Users(db: Session = Depends(get_db)):
     return {"status": 1, "msg": "User Lists.", "data": user_crud.AllUser(db=db)}
@@ -59,7 +59,7 @@ def UpdateUser(request: schemas.User, user_id: int, db: Session = Depends(get_db
     if update == 1:
         return {"status": 1, "msg": "Successfully Updated."}
     else:
-        return {"status": 0, "msg": "Failed to delete this data."}
+        return {"status": 0, "msg": "Failed to update."}
 
 
 @app.delete('/users/{user_id}')
@@ -74,7 +74,37 @@ def DeleteUser(user_id: int, db: Session = Depends(get_db)):
         return {"status": 0, "msg": "Failed to delete this data."}
 
 
-@app.post('/addjob')
-def AddJob(user_id: int, db: Session= Depends(get_db)):
-    pass
+@app.post('/jobs')
+def AddJob(request: schemas.Jobs, db: Session = Depends(get_db)):
+    """
+    First check user has any pending job
+    """
+    get_job = db.query(models.Jobs).where(and_(models.Jobs.user_id == request.user_id, models.Jobs.status == 0)).first()
+    if get_job:
+        return {"status": 0, "msg": "User has already pending job. Please wait.."}
 
+    insert = job_crud.InsertJob(db, request)
+    if insert.id > 0:
+        return {"status": 1, "msg": "Success."}
+    return {"status": 0, "msg": insert}
+
+
+@app.get('/jobs')
+def AllJobs(is_pending: int = None, db: Session = Depends(get_db)):
+    data = ""
+    if is_pending is None:
+        data = job_crud.AllJob(db=db)
+    elif is_pending == 1:
+        data = job_crud.AllPendingJobs(db=db)
+    elif is_pending == 0:
+        data = job_crud.AllFinishedJobs(db=db)
+    return {"status": 1, "msg": "Job Lists.", "data": data}
+
+
+@app.put('/jobs/{job_id}')
+def UpdateJob(job_id: int, db: Session = Depends(get_db)):
+    update = job_crud.UpdateJob(db=db, job_id=job_id)
+    if update == 1:
+        return {"status": 1, "msg": "Job finished."}
+    else:
+        return {"status": 0, "msg": "Failed to finish the job."}

@@ -8,7 +8,7 @@ def AllUser(db: Session):
 
 
 def InsertUser(db: Session, request: schemas.User):
-    user = models.User(name=request.name, unq_id=request.unq_id, position=request.position, status=request.status)
+    user = models.User(name=request.name, unq_id=request.unq_id, position_x=request.position_x, position_y=request.position_y, status=request.status)
     db.add(user)
     db.commit()
     db.refresh(user)
@@ -32,7 +32,8 @@ def UpdateUser(db: Session, request: schemas.User, user_id: int):
     data = {
         models.User.name: request.name,
         models.User.unq_id: request.unq_id,
-        models.User.position: request.position,
+        models.User.position_x: request.position_x,
+        models.User.position_y: request.position_y,
         models.User.status: request.status,
     }
     update = db.query(models.User).filter(models.User.id == user_id).update(data, synchronize_session=False)

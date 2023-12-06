@@ -1,27 +1,45 @@
 from sqlalchemy.orm import Session
 from Database import models, schemas
-from sqlalchemy import select
+from sqlalchemy import select, desc
 from sqlalchemy import or_
 
 
 def AllJob(db: Session):
-    return db.query(models.User).all()
+    # return db.query(models.Jobs).join(models.User).all()
+    return db.query(models.Jobs).all()
 
 
-def InsertJob(db: Session, user_id: int):
-    get_user = db.query(models.User).filter(models.User.id == user_id).first()
-    get_job = db.query(models.Jobs).order_by(models.Jobs.id).first()
-
-    # user = models.Jobs(unq_id=request.unq_id, position=request.position, status=request.status)
-    # db.add(user)
-    # db.commit()
-    # db.refresh(user)
-    # # print("user", user.id)
-    # return user
+def AllPendingJobs(db: Session):
+    return db.query(models.Jobs).where(models.Jobs.status == 0).all()
 
 
-def GetUser(db: Session, user_id: int):
-    return db.query(models.User).filter(models.User.id == user_id).first()
+def AllFinishedJobs(db: Session):
+    return db.query(models.Jobs).where(models.Jobs.status == 1).all()
 
 
+def InsertJob(db: Session, request: schemas.Jobs):
+    get_user = db.query(models.User).filter(models.User.id == request.user_id).first()
 
+    get_job = db.query(models.Jobs).order_by(desc(models.Jobs.id)).first()
+
+    if get_job is None:
+        job_id = 1000001
+    else:
+        job_id = get_job.unq_id + 1
+
+    job = models.Jobs(unq_id=job_id, user_id=request.user_id, position_x=get_user.position_x,
+                      position_y=get_user.position_y, status=0)
+    db.add(job)
+    db.commit()
+    db.refresh(job)
+
+    return job
+
+
+def UpdateJob(db: Session, job_id: int):
+    data = {
+        models.Jobs.status: 1,
+    }
+    update = db.query(models.Jobs).filter(models.Jobs.id == job_id).update(data, synchronize_session=False)
+    db.commit()
+    return update

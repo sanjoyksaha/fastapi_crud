@@ -12,8 +12,9 @@ class User(BaseModel):
 
 
 class Jobs(BaseModel):
-    unq_id: int
+    unq_id: Optional[int] = None
     user_id: int
-    position_x: float
-    position_y: float
+    position_x: Optional[float] = None
+    position_y: Optional[float] = None
     status: int = 1
+
