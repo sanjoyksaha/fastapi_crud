@@ -55,7 +55,7 @@
                     <th scope="col">Unique ID</th>
                     <th scope="col">Position X</th>
                     <th scope="col">Position Y</th>
-                    <th scope="col">Action</th>
+                    <th scope="col">Job Status</th>
                 </tr>
                 </thead>
                 <tbody id="table_body">
@@ -140,14 +140,17 @@
                     data?.data?.map((item, index) => {
                         html += "<tr>";
                         html += "<td>" + serial + "</td>";
-                        html += "<td>" + item.name + "</td>";
+                        html += "<td>" + item.creator.name + "</td>";
                         html += "<td>" + item.unq_id + "</td>";
                         html += "<td>" + item.position_x + "</td>";
                         html += "<td>" + item.position_y + "</td>";
                         html += "<td>";
-                        html += "<button type='button' class='btn btn-info btn-sm' style='margin-right: 5px' onclick='handleCall(" + item.id + ")'>Call</button>";
-                        html += "<button type='button' class='btn btn-primary btn-sm' style='margin-right: 5px' onclick='handleEdit(" + item.id + ")'>Edit</button>";
-                        html += "<button type='button' class='btn btn-danger btn-sm' onclick='handleDelete(" + item.id + ")'>Delete</button>"
+                        if(item.status === 1){
+                            html += "<span class='badge rounded-pill text-bg-primary'>Done</span>";
+                        }
+                        else{
+                            html += "<span class='badge rounded-pill text-bg-danger'>Pending</span>";
+                        }
                         html += "</td>";
                         html += "</tr>";
                         serial += 1

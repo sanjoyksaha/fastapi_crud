@@ -90,10 +90,18 @@ def AddJob(request: schemas.Jobs, db: Session = Depends(get_db)):
 
 
 @app.get('/jobs')
-def AllJobs(is_pending: int = None, db: Session = Depends(get_db)):
+def AllJobs(is_pending: int = None, page: int = None, db: Session = Depends(get_db)):
     data = ""
+    page_size = 2  # Number of users per page
+    if page is not None:
+        page = page
+    else:
+        page = 1
+
+    # Calculate the offset based on the page number and page size
+    offset = (page - 1) * page_size
     if is_pending is None:
-        data = job_crud.AllJob(db=db)
+        data = job_crud.AllJob(db=db, offset=offset, page_size=page_size)
     elif is_pending == 1:
         data = job_crud.AllPendingJobs(db=db)
     elif is_pending == 0:

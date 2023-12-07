@@ -1,12 +1,12 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from Database import models, schemas
 from sqlalchemy import select, desc
 from sqlalchemy import or_
 
 
-def AllJob(db: Session):
+def AllJob(db: Session, offset, page_size: int = 10):
     # return db.query(models.Jobs).join(models.User).all()
-    return db.query(models.Jobs).all()
+    return db.query(models.Jobs).options(joinedload(models.Jobs.creator)).offset(offset).limit(page_size).all()
 
 
 def AllPendingJobs(db: Session):
