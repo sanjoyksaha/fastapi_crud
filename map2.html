@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Indoor Navigation System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <style>
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: red;
+            position: absolute;
+            top: 82px;
+            left: 438px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="index.html">Indoor Navigation System</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="index.html">Users</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="jobs.html">Job</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="map.html">Map</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container mt-3">
+    <div class="row">
+
+    </div>
+</div>
+
+<canvas id="myCanvas" style="border:1px solid #000; margin-left: 50px"></canvas>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    // var canvas = document.getElementById('myCanvas');
+    // var ctx = canvas.getContext('2d');
+    // var img = new Image();
+    // img.src = "layout.png";
+
+    // When the image is loaded, draw it
+    //     img.onload = function () {
+    //         canvas.width = img.width;
+    //         canvas.height = img.height;
+    //         // ctx.width=img.width;
+    //         // ctx.height=img.height;
+    //         ctx.drawImage(img, 0, 0);
+    //
+    //     }
+
+    // Specify the src to load the image
+
+
+    // canvas.onclick = function (event) {
+    //     // Get the mouse coordinates
+    //     console.log(event)
+    //     var mouseX = event.clientX;
+    //     var mouseY = event.clientY;
+    //     console.log(mouseX, mouseY)
+    //
+    //     // Change the color at the clicked coordinates
+    //     changeColor(mouseX, mouseY);
+    // };
+
+    // function changeColor(x, y) {
+    //     ctx.fillStyle = 'red';
+    //     ctx.fillRect(x, y, 5, 5); // Change the size as needed
+    // }
+    var canvas = document.getElementById('myCanvas');
+    const apiBaseURL = 'http://192.168.68.149:8001/';
+    let x = "";
+    let y = "";
+
+
+    axios.get(apiBaseURL + 'map')
+        .then(({data}) => {
+            if (data.status === 1) {
+
+                const data1 = {
+                    datasets: [{
+                        label: 'Scatter Dataset',
+                        data: data.data,
+                        backgroundColor: 'rgb(255, 99, 132)'
+                    }],
+                };
+
+                new Chart(canvas, {
+                    type: 'scatter',
+                    data: data1,
+                    options: {
+                        scales: {
+                            x: {
+                                type: 'linear',
+                                position: 'bottom'
+                            }
+                        },
+                         onClick: (e) => {
+                            console.log(e)
+                             const { x, y } = Chart.helpers.getRelativePosition(e, chart);
+                             console.log(x, y)
+                         }
+                    }
+
+                    // type: 'bar',
+                    // data: {
+                    //     labels: data.x,
+                    //     datasets: [{
+                    //         label: '# of Votes',
+                    //         data: data.y,
+                    //         borderWidth: 1
+                    //     }]
+                    // },
+                    // options: {
+                    //     scales: {
+                    //         y: {
+                    //             beginAtZero: true
+                    //         }
+                    //     }
+                    // }
+                });
+            }
+        })
+        .catch(error => console.log(error))
+
+
+    // const ctx = document.getElementById('myChart');
+
+
+</script>
+
+</body>
+</html>
