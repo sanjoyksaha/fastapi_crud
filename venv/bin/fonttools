@@ -1,4 +1,4 @@
-#!/mnt/dcb8c829-ebd2-42e0-99ca-680c32906b68/python/indor_navigation_system/venv/bin/python3
+#!/mnt/CIS/python/fastapi_crud/venv/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys

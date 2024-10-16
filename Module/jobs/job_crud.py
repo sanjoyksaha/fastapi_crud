@@ -10,7 +10,8 @@ def AllJob(db: Session, offset, page_size: int = 10):
 
 
 def AllPendingJobs(db: Session):
-    return db.query(models.Jobs).where(models.Jobs.status == 0).all()
+    # return db.query(models.Jobs).where(models.Jobs.status == 0).all()
+    return db.query(models.Jobs).where(models.Jobs.status != 1).all()
 
 
 def AllFinishedJobs(db: Session):
@@ -36,10 +37,17 @@ def InsertJob(db: Session, request: schemas.Jobs):
     return job
 
 
-def UpdateJob(db: Session, job_id: int):
+def UpdateJob(db: Session, request: schemas.JobStatus, job_id: int):
     data = {
-        models.Jobs.status: 1,
+        models.Jobs.status: request.status,
     }
     update = db.query(models.Jobs).filter(models.Jobs.id == job_id).update(data, synchronize_session=False)
     db.commit()
     return update
+
+
+def DeleteJob(db: Session, job_id: int):
+    delete = db.query(models.Jobs).filter(models.Jobs.id == job_id).delete(synchronize_session=False)
+    db.commit()
+
+    return delete

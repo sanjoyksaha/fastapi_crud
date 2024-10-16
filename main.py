@@ -95,7 +95,7 @@ def AddJob(request: schemas.Jobs, db: Session = Depends(get_db)):
 @app.get('/jobs')
 def AllJobs(is_pending: int = None, page: int = None, db: Session = Depends(get_db)):
     data = ""
-    page_size = 2  # Number of users per page
+    page_size = 10 # Number of users per page
     if page is not None:
         page = page
     else:
@@ -113,12 +113,24 @@ def AllJobs(is_pending: int = None, page: int = None, db: Session = Depends(get_
 
 
 @app.put('/jobs/{job_id}')
-def UpdateJob(job_id: int, db: Session = Depends(get_db)):
-    update = job_crud.UpdateJob(db=db, job_id=job_id)
+def UpdateJob(request: schemas.JobStatus, job_id: int, db: Session = Depends(get_db)):
+    update = job_crud.UpdateJob(db=db, request=request, job_id=job_id)
     if update == 1:
         return {"status": 1, "msg": "Job finished."}
     else:
         return {"status": 0, "msg": "Failed to finish the job."}
+
+
+@app.delete('/jobs/{job_id}')
+def DeleteUser(job_id: int, db: Session = Depends(get_db)):
+    # check = job_crud.GetUser(db=db, user_id=user_id)
+    # if check is None:
+    #     return {"status": 0, "msg": "Invalid UserID."}
+    delete = job_crud.DeleteJob(db=db, job_id=job_id)
+    if delete == 1:
+        return {"status": 1, "msg": "Successfully Deleted."}
+    else:
+        return {"status": 0, "msg": "Failed to delete this data."}
 
 
 @app.get('/map')

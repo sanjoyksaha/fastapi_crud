@@ -56,6 +56,7 @@
                     <th scope="col">Position X</th>
                     <th scope="col">Position Y</th>
                     <th scope="col">Job Status</th>
+                    <th scope="col">Action</th>
                 </tr>
                 </thead>
                 <tbody id="table_body">
@@ -118,7 +119,7 @@
         crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
-    const apiBaseURL = 'http://192.168.68.149:8001/';
+    const apiBaseURL = 'http://192.168.68.126:9000/';
     const getUsers = () => {
         axios.get(apiBaseURL + 'jobs')
             .then(({data}) => {
@@ -148,10 +149,20 @@
                         if(item.status === 1){
                             html += "<span class='badge rounded-pill text-bg-primary'>Done</span>";
                         }
+                        else if (item.status === 5){
+                             html += "<span class='badge rounded-pill text-bg-danger'>Failed</span>";
+                        }
+                        else if (item.status === 4){
+                             html += "<span class='badge rounded-pill text-bg-primary'>Preempted</span>";
+                        }
+                        else if (item.status === 3){
+                             html += "<span class='badge rounded-pill text-bg-primary'>Pending</span>";
+                        }
                         else{
-                            html += "<span class='badge rounded-pill text-bg-danger'>Pending</span>";
+                            html += "<span class='badge rounded-pill text-bg-danger'>Waiting</span>";
                         }
                         html += "</td>";
+                        html += "<td><button type='button' class='btn btn-danger btn-sm' onclick='handleDelete(" + item.id + ")'>Delete</button></td>";
                         html += "</tr>";
                         serial += 1
                     })
@@ -234,7 +245,7 @@
 
     const handleDelete = (id) => {
         if (confirm("Are you sure you want to delete?") == true) {
-            axios.delete(apiBaseURL + 'users/' + id)
+            axios.delete(apiBaseURL + 'jobs/' + id)
                 .then(({data}) => {
                     if (data?.status === 1) {
                         alert(data?.msg)
