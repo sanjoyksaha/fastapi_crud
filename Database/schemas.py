@@ -17,6 +17,10 @@ class Jobs(BaseModel):
     position_x: Optional[float] = None
     position_y: Optional[float] = None
     status: int = 1
+    door_open: Optional[int]= 0
 
 class JobStatus(BaseModel):
     status: int
+
+class DoorStatus(BaseModel):
+    door_open: int

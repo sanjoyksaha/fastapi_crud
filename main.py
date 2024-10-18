@@ -116,6 +116,9 @@ def AllJobs(is_pending: int = None, page: int = None, db: Session = Depends(get_
 def UpdateJob(request: schemas.JobStatus, job_id: int, db: Session = Depends(get_db)):
     update = job_crud.UpdateJob(db=db, request=request, job_id=job_id)
     if update == 1:
+        if request.status == 1:
+            get_job = job_crud.GetJob(db=db, job_id=job_id)
+            return {"status": 1, "msg": "Successfully Updated.", "data": get_job}
         return {"status": 1, "msg": "Job finished."}
     else:
         return {"status": 0, "msg": "Failed to finish the job."}

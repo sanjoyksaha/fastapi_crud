@@ -26,4 +26,5 @@ class Jobs(Base):
     position_x = Column(Double)
     position_y = Column(Double)
     status = Column(Integer, default=1)
+    door_open = Column(Integer, default=0)
     creator = relationship('User', back_populates='jobs')

@@ -37,6 +37,10 @@ def InsertJob(db: Session, request: schemas.Jobs):
     return job
 
 
+def GetJob(db: Session, job_id: int):
+    return db.query(models.Jobs).filter(models.Jobs.id == job_id).first()
+
+
 def UpdateJob(db: Session, request: schemas.JobStatus, job_id: int):
     data = {
         models.Jobs.status: request.status,
