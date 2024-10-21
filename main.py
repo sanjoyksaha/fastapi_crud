@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from Database import models
 from Database.database import engine
-from Routers import user_routes, job_routes, map_routes
+from Router import user_routes, job_routes, map_routes
 
 app = FastAPI()
 

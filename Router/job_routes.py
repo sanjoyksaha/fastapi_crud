@@ -20,10 +20,14 @@ async def create_job(request: schemas.Jobs, db: Session = Depends(get_db)):
 
 @router.put('/jobs/{job_id}')
 def update_job(request: schemas.JobStatus, job_id: int, db: Session = Depends(get_db)):
-    return JobController.updateJob(db, job_id, request)
+    return JobController.updateJob(db, request, job_id)
 
 
 @router.delete('/jobs/{job_id}')
 def delete_job(job_id: int, db: Session = Depends(get_db)):
     return JobController.deleteJob(db, job_id)
 
+
+@router.put('/jobs/door_status/{job_id}')
+def update_job(request: schemas.DoorStatus, job_id: int, db: Session = Depends(get_db)):
+    return JobController.updateDoorStatus(db, request, job_id)

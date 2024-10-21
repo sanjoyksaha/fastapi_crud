@@ -22,7 +22,7 @@ def getJobs(db: Session, is_pending: int = None, page: int = None):
         data = job_crud.AllPendingJobs(db=db)
     elif is_pending == 0:
         data = job_crud.AllFinishedJobs(db=db)
-    return {"status": 1, "msg": "User Lists.", "data": data}
+    return {"status": 1, "msg": "Job Lists.", "data": data}
 
 
 def createJob(db: Session, request):
@@ -59,3 +59,11 @@ def deleteJob(db: Session, job_id):
         return {"status": 1, "msg": "Successfully Deleted."}
     else:
         return {"status": 0, "msg": "Failed to delete this data."}
+
+
+def updateDoorStatus(db: Session, request, job_id):
+    update = job_crud.UpdateDoorStatus(db=db, request=request, job_id=job_id)
+    if update == 1:
+        return {"status": 1, "msg": "Successfully Door Status Updated."}
+    else:
+        return {"status": 0, "msg": "Failed to update door status."}

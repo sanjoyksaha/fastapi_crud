@@ -55,3 +55,11 @@ def DeleteJob(db: Session, job_id: int):
     db.commit()
 
     return delete
+
+def UpdateDoorStatus(db: Session, request: schemas.DoorStatus, job_id: int):
+    data = {
+        models.Jobs.door_open: request.door_open,
+    }
+    update = db.query(models.Jobs).filter(models.Jobs.id == job_id).update(data, synchronize_session=False)
+    db.commit()
+    return update
