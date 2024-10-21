@@ -17,6 +17,10 @@ async def create_job(request: schemas.Jobs, db: Session = Depends(get_db)):
     return JobController.createJob(db, request)
 
 
+@router.get('/jobs/{job_id}')
+def job_details(job_id: int, db: Session = Depends(get_db)):
+    return JobController.getJobDetails(db, job_id)
+
 
 @router.put('/jobs/{job_id}')
 def update_job(request: schemas.JobStatus, job_id: int, db: Session = Depends(get_db)):

@@ -27,8 +27,8 @@ def getJobs(db: Session, is_pending: int = None, page: int = None):
 
 def createJob(db: Session, request):
     """
-       First check user has any pending job
-       """
+    First check user has any pending job
+    """
     get_job = db.query(models.Jobs).where(and_(models.Jobs.user_id == request.user_id, models.Jobs.status == 0)).first()
     if get_job:
         return {"status": 0, "msg": "User has already pending job. Please wait.."}
@@ -37,6 +37,14 @@ def createJob(db: Session, request):
     if insert.id > 0:
         return {"status": 1, "msg": "Success."}
     return {"status": 0, "msg": insert}
+
+
+def getJobDetails(db: Session, job_id):
+    data = job_crud.GetJob(db, job_id)
+    if data is not None:
+        return {"status": 1, "msg": "Job Details.", "data": data}
+    else:
+        return {"status": 0, "msg": "No Data Found."}
 
 
 def updateJob(db: Session, request, job_id):

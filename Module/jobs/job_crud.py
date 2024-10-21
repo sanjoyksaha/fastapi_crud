@@ -1,3 +1,5 @@
+import json
+
 from sqlalchemy.orm import Session, joinedload
 from Database import models, schemas
 from sqlalchemy import select, desc
@@ -6,8 +8,15 @@ from sqlalchemy import or_
 
 def AllJob(db: Session, offset, page_size: int = 10):
     # return db.query(models.Jobs).join(models.User).all()
-    return db.query(models.Jobs).options(joinedload(models.Jobs.creator)).offset(offset).limit(page_size).all()
+    # return db.query(models.Jobs.id).options(joinedload(models.Jobs.creator)).offset(offset).limit(page_size).all()
+    # return db.query(models.Jobs).join(models.Jobs.creator).offset(offset).limit(page_size).all()
 
+    results = (db.query(models.Jobs.id, models.Jobs.unq_id, models.Jobs.status, models.Jobs.door_open, models.Jobs.position_x, models.Jobs.position_y, models.User.name)
+               .join(models.User, models.User.id == models.Jobs.user_id).offset(offset).limit(page_size).all())
+    formatted_results = [{"id": row[0], "unq_id": row[1], "status": row[2], "door_open": row[3], "position_x": row[4], "position_y": row[5], "user_name": row[6]} for row
+                         in results]
+
+    return formatted_results
 
 def AllPendingJobs(db: Session):
     # return db.query(models.Jobs).where(models.Jobs.status == 0).all()
@@ -38,7 +47,20 @@ def InsertJob(db: Session, request: schemas.Jobs):
 
 
 def GetJob(db: Session, job_id: int):
-    return db.query(models.Jobs).filter(models.Jobs.id == job_id).first()
+    data = db.query(models.Jobs, models.User).join(models.User, models.User.id == models.Jobs.user_id).filter(models.Jobs.id == job_id).first()
+    if data:
+        return {
+                'id': data.Jobs.id,
+                'user_name': data.User.name,
+                'unq_id': data.Jobs.unq_id,
+                'status': data.Jobs.status,
+                'door_open': data.Jobs.door_open,
+                'position_x': data.Jobs.position_x,
+                'position_y': data.Jobs.position_y,
+            }
+    else:
+        return None
+
 
 
 def UpdateJob(db: Session, request: schemas.JobStatus, job_id: int):
