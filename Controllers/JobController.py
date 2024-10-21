@@ -50,10 +50,13 @@ def getJobDetails(db: Session, job_id):
 def updateJob(db: Session, request, job_id):
     update = job_crud.UpdateJob(db=db, request=request, job_id=job_id)
     if update == 1:
+        get_job = job_crud.GetJob(db=db, job_id=job_id)
+        msg = 'Successfully updated.'
         if request.status == 1:
-            get_job = job_crud.GetJob(db=db, job_id=job_id)
-            return {"status": 1, "msg": "Successfully Updated.", "data": get_job}
-        return {"status": 1, "msg": "Job finished."}
+            msg = 'Goal Reached & Successfully Job Status Updated..'
+        elif request.status == 12:
+            msg = 'Job Is Finished.'
+        return {"status": 1, "msg": f'{msg}', "data": get_job}
     else:
         return {"status": 0, "msg": "Failed to finish the job."}
 

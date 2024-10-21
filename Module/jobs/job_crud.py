@@ -20,7 +20,7 @@ def AllJob(db: Session, offset, page_size: int = 10):
 
 def AllPendingJobs(db: Session):
     # return db.query(models.Jobs).where(models.Jobs.status == 0).all()
-    return db.query(models.Jobs).where(models.Jobs.status != 1).all()
+    return db.query(models.Jobs).where(models.Jobs.status != 12).where(models.Jobs.door_open != 2).all()
 
 
 def AllFinishedJobs(db: Session):
