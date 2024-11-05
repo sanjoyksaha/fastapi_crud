@@ -7,8 +7,8 @@ def AllUser(db: Session):
     return db.query(models.User).all()
 
 
-def InsertUser(db: Session, request: schemas.User):
-    user = models.User(name=request.name, unq_id=request.unq_id, position_x=request.position_x, position_y=request.position_y, status=request.status)
+def InsertUser(db: Session, payload: schemas.User):
+    user = models.User(name=payload.name, unq_id=payload.unq_id, position_x=payload.position_x, position_y=payload.position_y, status=payload.status)
     db.add(user)
     db.commit()
     db.refresh(user)
@@ -28,13 +28,13 @@ def GetUserByUnqID(db: Session, unq_id: int):
     return db.query(models.User).filter(models.User.unq_id == unq_id).first()
 
 
-def UpdateUser(db: Session, request: schemas.User, user_id: int):
+def UpdateUser(db: Session, payload: schemas.User, user_id: int):
     data = {
-        models.User.name: request.name,
-        models.User.unq_id: request.unq_id,
-        models.User.position_x: request.position_x,
-        models.User.position_y: request.position_y,
-        models.User.status: request.status,
+        models.User.name: payload.name,
+        models.User.unq_id: payload.unq_id,
+        models.User.position_x: payload.position_x,
+        models.User.position_y: payload.position_y,
+        models.User.status: payload.status,
     }
     update = db.query(models.User).filter(models.User.id == user_id).update(data, synchronize_session=False)
     db.commit()

@@ -1,3 +1,4 @@
+from symtable import Class
 from typing import Optional
 
 from pydantic import BaseModel
@@ -9,6 +10,7 @@ class User(BaseModel):
     position_x: float
     position_y: float
     status: Optional[bool] = True
+    is_superuser: Optional[int] = 0
 
 
 class Jobs(BaseModel):
@@ -24,3 +26,14 @@ class JobStatus(BaseModel):
 
 class DoorStatus(BaseModel):
     door_open: int
+
+
+class Authentication(BaseModel):
+    userid: str
+    # password: str
+
+class UserTokens(BaseModel):
+    user_id: int
+    token: str
+    expired_at: int
+    status: int

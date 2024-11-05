@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 
 from Controllers import UserController
@@ -11,25 +11,25 @@ router = APIRouter()
 
 
 @router.get("/users")
-async def get_users(db: Session = Depends(get_db)):
-    return UserController.getUsers(db)
+async def get_users(request: Request, db: Session = Depends(get_db)):
+    return UserController.getUsers(request, db)
 
 
 @router.post("/users")
-async def create_user(request: schemas.User, db: Session = Depends(get_db)):
-    return UserController.insertUser(request, db)
+async def create_user(request: Request, payload:schemas.User, db: Session = Depends(get_db)):
+    return UserController.insertUser(request, payload, db)
 
 
 @router.get("/users/{user_id}")
-async def get_user(user_id: int, db: Session = Depends(get_db)):
-    return UserController.getUser(user_id, db)
+async def get_user(request: Request, user_id: int, db: Session = Depends(get_db)):
+    return UserController.getUser(request, user_id, db)
 
 
 @router.put('/users/{user_id}')
-async def update_user(request: schemas.User, user_id: int, db: Session = Depends(get_db)):
-    return UserController.updateUser(request, user_id, db)
+async def update_user(request: Request, payload: schemas.User, user_id: int, db: Session = Depends(get_db)):
+    return UserController.updateUser(request, payload, user_id, db)
 
 
 @router.delete('/users/{user_id}')
-async def delete_user(user_id: int, db: Session = Depends(get_db)):
-    return UserController.deleteUser(user_id, db)
+async def delete_user(request: Request, user_id: int, db: Session = Depends(get_db)):
+    return UserController.deleteUser(request, user_id, db)

@@ -62,6 +62,7 @@
                 <thead>
                 <tr>
                     <th scope="col">#</th>
+                    <th scope="col">Type</th>
                     <th scope="col">Name</th>
                     <th scope="col">Unique ID</th>
                     <th scope="col">Position X</th>
@@ -129,7 +130,8 @@
         crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
-    const apiBaseURL = 'http://192.168.68.113:9000/';
+    // const apiBaseURL = 'http://192.168.68.113:9000/';
+    const apiBaseURL = 'http://127.0.0.1:8000/';
     const getUsers = () => {
         axios.get(apiBaseURL + 'users')
             .then(({data}) => {
@@ -151,6 +153,9 @@
                     data?.data?.map((item, index) => {
                         html += "<tr>";
                         html += "<td>" + serial + "</td>";
+                        html += "<td>";
+                        html += item.is_superadmin === 1 ? 'Superadmin' : 'User';
+                        html += "</td>";
                         html += "<td>" + item.name + "</td>";
                         html += "<td>" + item.unq_id + "</td>";
                         html += "<td>" + item.position_x + "</td>";

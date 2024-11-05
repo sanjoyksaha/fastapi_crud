@@ -6,25 +6,32 @@ from sqlalchemy import select, desc
 from sqlalchemy import or_
 
 
-def AllJob(db: Session, offset, page_size: int = 10):
+def AllJob(db: Session, filters, offset, page_size: int = 10):
     # return db.query(models.Jobs).join(models.User).all()
     # return db.query(models.Jobs.id).options(joinedload(models.Jobs.creator)).offset(offset).limit(page_size).all()
     # return db.query(models.Jobs).join(models.Jobs.creator).offset(offset).limit(page_size).all()
 
     results = (db.query(models.Jobs.id, models.Jobs.unq_id, models.Jobs.status, models.Jobs.door_open, models.Jobs.position_x, models.Jobs.position_y, models.User.name)
-               .join(models.User, models.User.id == models.Jobs.user_id).offset(offset).limit(page_size).all())
+               .join(models.User, models.User.id == models.Jobs.user_id))
+    if len(filters) > 0:
+        results = results.filter(models.Jobs.user_id == filters['user_id'])
+    results = results.offset(offset)
+    results = results.limit(page_size)
+    results = results.all()
     formatted_results = [{"id": row[0], "unq_id": row[1], "status": row[2], "door_open": row[3], "position_x": row[4], "position_y": row[5], "user_name": row[6]} for row
                          in results]
 
     return formatted_results
 
-def AllPendingJobs(db: Session):
+def AllPendingJobs(db: Session, filters):
     # return db.query(models.Jobs).where(models.Jobs.status == 0).all()
     # return db.query(models.Jobs).where(models.Jobs.status != 12).where(models.Jobs.door_open != 2).all()
     results = (db.query(models.Jobs.id, models.Jobs.unq_id, models.Jobs.status, models.Jobs.door_open, models.Jobs.position_x, models.Jobs.position_y, models.User.name, models.Jobs.user_id)
-               .join(models.User, models.User.id == models.Jobs.user_id)
-               .where(models.Jobs.status != 12).where(models.Jobs.door_open != 2)
-               .all())
+               .join(models.User, models.User.id == models.Jobs.user_id))
+    results = results.where(models.Jobs.status != 12).where(models.Jobs.door_open != 2)
+    if len(filters) > 0:
+        results = results.filter(models.Jobs.user_id == filters['user_id'])
+    results = results.all()
     formatted_results = [{"id": row[0], "unq_id": row[1], "status": row[2], "door_open": row[3], "position_x": row[4], "position_y": row[5], "user_name": row[6], "user_id": row[7]} for row
                          in results]
 
@@ -35,8 +42,8 @@ def AllFinishedJobs(db: Session):
     return db.query(models.Jobs).where(models.Jobs.status == 1).all()
 
 
-def InsertJob(db: Session, request: schemas.Jobs):
-    get_user = db.query(models.User).filter(models.User.id == request.user_id).first()
+def InsertJob(db: Session, payload: schemas.Jobs):
+    get_user = db.query(models.User).filter(models.User.id == payload.user_id).first()
 
     get_job = db.query(models.Jobs).order_by(desc(models.Jobs.id)).first()
 
@@ -45,7 +52,7 @@ def InsertJob(db: Session, request: schemas.Jobs):
     else:
         job_id = get_job.unq_id + 1
 
-    job = models.Jobs(unq_id=job_id, user_id=request.user_id, position_x=get_user.position_x,
+    job = models.Jobs(unq_id=job_id, user_id=payload.user_id, position_x=get_user.position_x,
                       position_y=get_user.position_y, status=0)
     db.add(job)
     db.commit()
@@ -71,9 +78,9 @@ def GetJob(db: Session, job_id: int):
 
 
 
-def UpdateJob(db: Session, request: schemas.JobStatus, job_id: int):
+def UpdateJob(db: Session, payload: schemas.JobStatus, job_id: int):
     data = {
-        models.Jobs.status: request.status,
+        models.Jobs.status: payload.status,
     }
     update = db.query(models.Jobs).filter(models.Jobs.id == job_id).update(data, synchronize_session=False)
     db.commit()
@@ -86,9 +93,9 @@ def DeleteJob(db: Session, job_id: int):
 
     return delete
 
-def UpdateDoorStatus(db: Session, request: schemas.DoorStatus, job_id: int):
+def UpdateDoorStatus(db: Session, payload: schemas.DoorStatus, job_id: int):
     data = {
-        models.Jobs.door_open: request.door_open,
+        models.Jobs.door_open: payload.door_open,
     }
     update = db.query(models.Jobs).filter(models.Jobs.id == job_id).update(data, synchronize_session=False)
     db.commit()
