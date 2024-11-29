@@ -33,3 +33,8 @@ async def update_user(request: Request, payload: schemas.User, user_id: int, db:
 @router.delete('/users/{user_id}')
 async def delete_user(request: Request, user_id: int, db: Session = Depends(get_db)):
     return UserController.deleteUser(request, user_id, db)
+
+
+@router.get('/authuser')
+async def get_user(request: Request, db: Session = Depends(get_db)):
+    return UserController.AuthUser(request, db)

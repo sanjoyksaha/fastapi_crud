@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 class User(BaseModel):
     name: str
-    unq_id: int
+    unq_id: Optional[int] = 0
     position_x: float
     position_y: float
     status: Optional[bool] = True

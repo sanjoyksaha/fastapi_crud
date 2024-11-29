@@ -15,7 +15,7 @@ def getUsers(request, db: Session):
     if len(auth) == 0:
         return {"status": 0, "msg": "Unauthorized"}
 
-    users = user_crud.AllUser(db=db)
+    users = user_crud.AllUser(db=db, authUser=auth)
     return {"status": 1, "msg": "User Lists.", "data": users}
 
 def insertUser(request, payload, db: Session):
@@ -28,6 +28,13 @@ def insertUser(request, payload, db: Session):
     check = user_crud.GetUserByNameAndUnqID(db, name=payload.name, unq_id=payload.unq_id)
     if check:
         return {"status": 0, "msg": "Already exists."}
+
+    last = user_crud.GetLastUser(db=db)
+    unq_id = 100001
+    if last is not None:
+        unq_id = int(last.unq_id) + 1
+    payload.unq_id = unq_id
+
     insert = user_crud.InsertUser(db, payload)
     if insert.id > 0:
         return {"status": 1, "msg": "Successfully Inserted."}
@@ -74,3 +81,11 @@ def deleteUser(request, user_id: int, db: Session):
         return {"status": 1, "msg": "Successfully Deleted."}
     else:
         return {"status": 0, "msg": "Failed to delete this data."}
+
+def AuthUser(request, db: Session):
+    auth = Helper.AuthenticateByToken(request, db)
+    if len(auth) == 0:
+        return {"status": 0, "msg": "Unauthorized"}
+
+    print("auth", auth)
+    return auth

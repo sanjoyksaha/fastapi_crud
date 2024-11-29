@@ -38,7 +38,7 @@ def AllPendingJobs(db: Session, filters):
     return formatted_results
 
 
-def AllFinishedJobs(db: Session):
+def AllFinishedJobs(db: Session, filters):
     return db.query(models.Jobs).where(models.Jobs.status == 1).all()
 
 
