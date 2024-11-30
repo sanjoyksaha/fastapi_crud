@@ -4,7 +4,7 @@ from xmlrpc.client import DateTime
 from sqlalchemy import Boolean, Column, Integer, String, Double, ForeignKey
 from sqlalchemy.orm import relationship
 
-from .database import Base
+from database import Base
 
 
 class User(Base):
