@@ -89,3 +89,13 @@ def AuthUser(request, db: Session):
 
     print("auth", auth)
     return auth
+
+def GetUserByUnqID(request, unq_id: int, db: Session):
+    auth = Helper.AuthenticateByToken(request, db)
+    if len(auth) == 0:
+        return {"status": 0, "msg": "Unauthorized"}
+    if auth['is_superadmin'] != 1:
+        return {"status": 0, "msg": "You are not an administrator."}
+
+    data = user_crud.GetUserByUnqID(db=db, unq_id=unq_id)
+    return {"status": 1, "msg": "User details.", "data": data}
