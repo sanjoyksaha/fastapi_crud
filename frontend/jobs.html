@@ -18,10 +18,18 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="index.html">Users</a>
+                    <a class="nav-link active" aria-current="page" href="users.html">Users</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="jobs.html">Job</a>
+                </li>
+            </ul>
+             <ul class="navbar-nav" id="login">
+                 <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="index.html" id="login_btn">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="logout.html" id="logout_btn" style="display: none">Logout</a>
                 </li>
             </ul>
         </div>
@@ -124,9 +132,33 @@
         crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
-    const apiBaseURL = 'http://192.168.68.113:9000/';
+    // const apiBaseURL = 'http://192.168.68.113:9000/';
+    const apiBaseURL = 'http://127.0.0.1:8000/';
+    const token = localStorage.getItem('token');
+    if(token == null){
+        window.location.href = 'index.html';
+    }
+
+    if(token != null){
+        console.log(token);
+        document.getElementById('login_btn').style.display = "none";
+        document.getElementById('logout_btn').style.display = "block";
+    }
+
+    const header = () => {
+        if(token != ''){
+            return {
+                headers: {
+                    'Authorization': token,
+                    'Content-Type': 'application/json'
+                }
+            }
+        }
+        return {headers: {}}
+    }
+
     const getJobs = () => {
-        axios.get(apiBaseURL + 'jobs')
+        axios.get(apiBaseURL + 'jobs', header())
             .then(({data}) => {
                 if (data?.status === 1) {
                     // console.log(data?.data)
@@ -178,6 +210,9 @@
                     })
                     document.getElementById('table_body').innerHTML = html
                 }
+                else{
+                    alert(data?.msg);
+                }
             })
             .catch(errors => console.log(errors))
     }
@@ -207,7 +242,7 @@
 
         console.log('axios', data)
         console.log('axios', api)
-        axios.put(api, data)
+        axios.put(api, data, header())
             .then(({data}) => {
             if (data?.status === 1) {
                 alert(data?.msg)
@@ -235,7 +270,7 @@
             document.getElementById('is_job_update').value = 2;
         }
 
-        axios.get(apiBaseURL + 'jobs/' + id)
+        axios.get(apiBaseURL + 'jobs/' + id, header())
             .then(({data}) => {
                 if (data?.status === 1) {
                     document.getElementById('status').value = data?.data?.status;
@@ -273,7 +308,7 @@
 
     const handleDelete = (id) => {
         if (confirm("Are you sure you want to delete?") == true) {
-            axios.delete(apiBaseURL + 'jobs/' + id)
+            axios.delete(apiBaseURL + 'jobs/' + id, header())
                 .then(({data}) => {
                     if (data?.status === 1) {
                         alert(data?.msg)
