@@ -8,14 +8,14 @@ from Module.jobs import job_crud
 
 
 def getJobs(request, db: Session, is_pending: int = None, page: int = None):
-    auth = Helper.AuthenticateByToken(request, db)
+    # auth = Helper.AuthenticateByToken(request, db)
 
-    if len(auth) == 0:
-        return {"status": 0, "msg": "Unauthorized"}
+    # if len(auth) == 0:
+    #     return {"status": 0, "msg": "Unauthorized"}
 
     filters = {}
-    if auth['is_superadmin'] != 1:
-        filters['user_id'] = auth['id']
+    # if auth['is_superadmin'] != 1:
+    #     filters['user_id'] = auth['id']
 
     data = ""
     page_size = 10  # Number of users per page
@@ -55,10 +55,10 @@ def createJob(request, db: Session, payload):
 
 
 def getJobDetails(request, db: Session, job_id):
-    auth = Helper.AuthenticateByToken(request, db)
+    # auth = Helper.AuthenticateByToken(request, db)
 
-    if len(auth) == 0:
-        return {"status": 0, "msg": "Unauthorized"}
+    # if len(auth) == 0:
+    #     return {"status": 0, "msg": "Unauthorized"}
 
     data = job_crud.GetJob(db, job_id)
     if data is not None:
@@ -68,10 +68,10 @@ def getJobDetails(request, db: Session, job_id):
 
 
 def updateJob(request, db: Session, payload, job_id):
-    auth = Helper.AuthenticateByToken(request, db)
+    # auth = Helper.AuthenticateByToken(request, db)
 
-    if len(auth) == 0:
-        return {"status": 0, "msg": "Unauthorized"}
+    # if len(auth) == 0:
+    #     return {"status": 0, "msg": "Unauthorized"}
 
     update = job_crud.UpdateJob(db=db, payload=payload, job_id=job_id)
     if update == 1:
